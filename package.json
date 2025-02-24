@@ -1,0 +1,26 @@
+{
+  "name": "polygondapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^22.13.5",
+    "hardhat": "^2.22.18",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "@rainbow-me/rainbowkit": "^2.2.4",
+    "erc721a": "^4.3.0",
+    "ethers": "^6.13.5",
+    "wagmi": "^2.14.11"
+  }
+}
