@@ -25,10 +25,10 @@ contract NFTTicket is ERC1155PresetMinterPauser, Ownable {
         contractAddress = marketplaceAddress;
     }
 
-    function createToken(string memory newUri, uint64 amount)
-        public
-        returns (uint256)
-    {
+    function createToken(
+        string memory newUri,
+        uint64 amount
+    ) public returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
