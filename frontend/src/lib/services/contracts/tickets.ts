@@ -4,7 +4,7 @@ import {
   PreparedTransaction,
   prepareEvent,
 } from "thirdweb";
-import { NFTTicketContract } from "@/lib/contract";
+import { TicketMarketContract } from "@/lib/contract";
 import type { Abi } from "abitype";
 
 type PreparedCreateMarketTicket = PreparedTransaction<
@@ -58,7 +58,7 @@ type CreateMarketTicketResult = {
   transaction?: PreparedCreateMarketTicket;
 };
 
-export const createMarketTicket = async ({
+export const createMarketTicketFn = async ({
   eventId,
   tokenId,
   nftContract,
@@ -79,7 +79,7 @@ export const createMarketTicket = async ({
 }): Promise<CreateMarketTicketResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function createMarketTicket(uint256 eventId, uint256 tokenId, address nftContract, uint256 purchaseLimit, uint256 totalSupply, uint256 price, uint256 royaltyFee, uint256 maxResalePrice)",
       params: [
@@ -150,7 +150,7 @@ export const addMoreTicketsFn = async ({
 }): Promise<AddMoreTicketsResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function addMoreTicketsToMarket(address nftContract, uint256 tokenId, uint256 amount)",
       params: [nftContract, tokenId, amount],
@@ -211,7 +211,7 @@ export const buyTicketFn = async ({
 }): Promise<BuyTicketResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function buyTicket(address nftContract, uint256 tokenId, uint256 amount) payable",
       params: [nftContract, tokenId, amount],
@@ -266,7 +266,7 @@ export const buyResaleTicketFn = async ({
 }): Promise<BuyResaleTicketResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function buyResaleTicket(address nftContract, uint256 _resaleId) payable",
       params: [nftContract, _resaleId],
@@ -331,7 +331,7 @@ export const listOnResaleFn = async ({
 }): Promise<ListOnResaleResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function listOnResale(address nftContract, uint256 _tokenId, uint256 price) returns (uint256)",
       params: [nftContract, _tokenId, price],
@@ -414,7 +414,7 @@ export const validateTicketFn = async ({
 }): Promise<ValidateTicketResult> => {
   try {
     const transaction = prepareContractCall({
-      contract: NFTTicketContract,
+      contract: TicketMarketContract,
       method:
         "function validateTicket(address nftContract, uint256 tokenId, bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)",
       params: [nftContract, tokenId, hash, v, r, s],
@@ -452,7 +452,7 @@ export const ticketValidated = prepareEvent({
 // Get Functions
 export const getEventTicketsFn = (nftContract: string) => {
   return {
-    contract: NFTTicketContract,
+    contract: TicketMarketContract,
     method:
       "function getMyTickets(address nftContract) view returns ((uint256 tokenId, uint256 eventId, uint256 price, uint256 purchaseLimit, uint256 totalSupply, uint256 royaltyFee, uint256 maxResalePrice)[])",
     params: [nftContract],
@@ -461,7 +461,7 @@ export const getEventTicketsFn = (nftContract: string) => {
 
 export const getResaleTicketsFn = (_tokenId: bigint) => {
   return {
-    contract: NFTTicketContract,
+    contract: TicketMarketContract,
     method:
       "function getResaleTickets(uint256 _tokenId) view returns ((uint256 resaleId, uint256 tokenId, address seller, uint256 resalePrice, bool sold)[])",
     params: [_tokenId],
@@ -470,7 +470,7 @@ export const getResaleTicketsFn = (_tokenId: bigint) => {
 
 export const supportsInterfaceFn = (interfaceId: `0x${string}`) => {
   return {
-    contract: NFTTicketContract,
+    contract: TicketMarketContract,
     method:
       "function supportsInterface(bytes4 interfaceId) view returns (bool)",
     params: [interfaceId],
