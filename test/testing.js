@@ -1,4 +1,3 @@
-
 import { expect } from "chai";
 import "@nomiclabs/hardhat-waffle";
 describe("NFTTicket", async function () {
@@ -7,6 +6,7 @@ describe("NFTTicket", async function () {
   let sellerAddress;
   
   beforeEach(async function () {
+    
     const Market = await ethers.getContractFactory("TicketMarket");
     market = await Market.deploy();
     await market.deployed();

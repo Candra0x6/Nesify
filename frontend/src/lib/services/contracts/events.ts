@@ -1,119 +1,169 @@
-import {
-  prepareContractCall,
-  PrepareTransactionOptions,
-  PreparedTransaction,
-  prepareEvent,
-} from "thirdweb";
-import { TicketMarketContract } from "@/lib/contract";
-import type { Abi } from "abitype";
+import { marketContract, signers } from "@/lib/contract/cont";
+import { client } from "@/lib/thirdweb-dev";
+import { Event } from "@/types/event";
+import { ContractRes } from "@/utils/type";
+import { BigNumber } from "ethers";
+import { download } from "thirdweb/storage";
 
-export type PreparedCreateEvent = PreparedTransaction<
-  Abi,
-  {
-    readonly name: "createEvent";
-    readonly type: "function";
-    readonly stateMutability: "nonpayable";
-    readonly inputs: readonly [
-      {
-        readonly type: "string";
-        readonly name: "uri";
-      },
-      {
-        readonly type: "uint64";
-        readonly name: "startDate";
-      }
-    ];
-    readonly outputs: readonly [
-      {
-        readonly type: "uint256";
-      }
-    ];
-  },
-  PrepareTransactionOptions
->;
-
-type CreateEventResult = {
-  success: boolean;
-  message: string;
-  transaction?: PreparedCreateEvent;
-};
-
-export const createEventFn = async ({
-  uri,
-  startDate,
-}: {
-  uri: string;
-  startDate: bigint;
-}): Promise<CreateEventResult> => {
+export async function getAllEvents(): Promise<ContractRes<Event[]>> {
   try {
-    const transaction = prepareContractCall({
-      contract: TicketMarketContract,
-      method:
-        "function createEvent(string uri, uint64 startDate) returns (uint256)",
-      params: [uri, startDate],
-    }) as PreparedCreateEvent;
+    const data = await marketContract.getAllEvents();
+    const allEvents = await Promise.all(
+      data.map(
+        async (i: {
+          eventId: BigNumber;
+          uri: string;
+          ticketTotal: BigNumber;
+          ticketsSold: BigNumber;
+          owner: string;
+        }) => {
+          const eventUri = await i.uri;
+          if (!eventUri) {
+            throw new Error(
+              `Event URI does not exist for Event Id ${i.eventId.toNumber()}`
+            );
+          }
+
+          const response = await download({
+            client: client,
+            uri: eventUri,
+          });
+          const eventData = await response.json();
+          const soldOut =
+            i.ticketTotal.toNumber() - i.ticketsSold.toNumber() == 0;
+          const currEvent = {
+            eventId: i.eventId.toNumber(),
+            name: eventData.name,
+            description: eventData.description,
+            imageUri: eventData.image,
+            location: eventData.location,
+            startDate: eventData.eventDate,
+            soldOut,
+            ticketTotal: i.ticketTotal.toNumber(),
+            ticketSold: i.ticketsSold.toNumber(),
+            owner: i.owner,
+            ticketRemaining:
+              i.ticketTotal.toNumber() - i.ticketsSold.toNumber(),
+          };
+          return currEvent;
+        }
+      )
+    );
 
     return {
-      success: true,
-      message: "Event Created Successfully",
-      transaction,
+      data: allEvents,
+      message: "Events loaded successfully",
+      error: null,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      data: [],
+      message: "Error loading events",
+      error: error as string,
+    };
+  }
+}
+export async function getEventById(
+  eventId: string
+): Promise<ContractRes<Event | null>> {
+  try {
+    if (!Number.isInteger(parseInt(eventId))) {
+      throw new Error(`Event ID '${eventId}' is not valid`);
+    }
+    const data = await marketContract.getEvent(eventId);
+    const eventUri = await data.uri;
+    if (!eventUri) {
+      throw new Error(`Could not find URI for the Event ID #${eventId}`);
+    }
+    const response = await download({
+      client: client,
+      uri: eventUri,
+    });
+    const eventData = await response.json();
+
+    const currEvent = {
+      eventId: data.eventId.toNumber(),
+      name: eventData.name,
+      description: eventData.description,
+      imageUri: eventData.image,
+      location: eventData.location,
+      startDate: eventData.eventDate,
+      owner: data.owner,
+      soldOut: data.ticketTotal.toNumber() - data.ticketsSold.toNumber() == 0,
+      ticketTotal: data.ticketTotal.toNumber(),
+      ticketSold: data.ticketsSold.toNumber(),
+      ticketRemaining:
+        data.ticketTotal.toNumber() - data.ticketsSold.toNumber(),
+    };
+    return {
+      data: currEvent,
+      message: "Event loaded successfully",
+      error: null,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      data: null,
+      message: "Error loading event",
+      error: error as string,
+    };
+  }
+}
+export async function getUserEvents(): Promise<ContractRes<Event[]>> {
+  try {
+    const signedContracts = await signers();
+    const { signedMarketContract } = signedContracts;
+
+    const data = await signedMarketContract.getMyEvents();
+
+    const allEvents = await Promise.all(
+      data.map(
+        async (i: {
+          uri: string;
+          ticketTotal: BigNumber;
+          ticketsSold: BigNumber;
+          owner: string;
+          eventId: BigNumber;
+        }) => {
+          const eventUri = await i.uri;
+          if (!eventUri) {
+            throw new Error(
+              `Event URI does not exist for Event Id ${i.eventId.toNumber()}`
+            );
+          }
+          const response = await download({
+            client: client,
+            uri: eventUri,
+          });
+          const eventData = await response.json();
+          const ticketRemaining =
+            i.ticketTotal.toNumber() - i.ticketsSold.toNumber();
+          const currEvent = {
+            eventId: i.eventId.toNumber(),
+            name: eventData.name,
+            description: eventData.description,
+            imageUri: eventData.image,
+            location: eventData.location,
+            startDate: eventData.eventDate,
+            ticketTotal: i.ticketTotal.toNumber(),
+            ticketRemaining,
+            owner: i.owner,
+          };
+          return currEvent;
+        }
+      )
+    );
+    return {
+      data: allEvents,
+      message: "Events loaded successfully",
+      error: null,
     };
   } catch (error) {
     return {
-      success: false,
-      message:
-        error instanceof Error ? error.message : "Failed to create token",
+      data: [],
+      message: "Error loading events",
+      error: error as string,
     };
   }
-};
-
-// Event Functions
-
-export const getAllEventsFn = () => {
-  return {
-    contract: TicketMarketContract,
-    method:
-      "function getAllEvents() view returns ((uint256 eventId, string uri, uint64 startDate, uint256 ticketTotal, uint256 ticketsSold, address owner)[])",
-    params: [],
-  };
-};
-
-export const getEventByIdFn = (_eventId: bigint) => {
-  return {
-    contract: TicketMarketContract,
-    method:
-      "function getEvent(uint256 _eventId) view returns ((uint256 eventId, string uri, uint64 startDate, uint256 ticketTotal, uint256 ticketsSold, address owner))",
-    params: [_eventId],
-  };
-};
-
-export const getEventTicketsFn = (_eventId: bigint) => {
-  return {
-    contract: TicketMarketContract,
-    method:
-      "function getEventTickets(uint256 _eventId) view returns ((uint256 tokenId, uint256 eventId, uint256 price, uint256 purchaseLimit, uint256 totalSupply, uint256 royaltyFee, uint256 maxResalePrice)[])",
-    params: [_eventId],
-  };
-};
-
-export const getUserEventsFn = () => {
-  return {
-    contract: TicketMarketContract,
-    method:
-      "function getMyEvents() view returns ((uint256 eventId, string uri, uint64 startDate, uint256 ticketTotal, uint256 ticketsSold, address owner)[])",
-    params: [],
-  };
-};
-
-export const getUserEventListingsFn = () => {
-  return {
-    contract: TicketMarketContract,
-    method:
-      "function getMyResaleListings() view returns ((uint256 resaleId, uint256 tokenId, address seller, uint256 resalePrice, bool sold)[])",
-    params: [],
-  };
-};
-export const marketEventCreated = prepareEvent({
-  signature:
-    "event MarketEventCreated(uint256 indexed eventId, string uri, uint64 startDate, uint256 ticketTotal, uint256 ticketsSold, address owner)",
-});
+}
