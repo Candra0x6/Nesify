@@ -11,8 +11,15 @@ import {
   WalletIcon,
   TicketIcon,
 } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useActiveAccount } from "thirdweb/react";
 
 function UserLayout({ children }: { children: React.ReactNode }) {
+  const account = useActiveAccount();
+
+  if (!account?.address) {
+    redirect("/");
+  }
   return (
     <DashboardLayout sidebarMenus={sidebarMenus}>{children}</DashboardLayout>
   );
