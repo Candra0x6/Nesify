@@ -2,34 +2,20 @@
 
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Ticket, Heart } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ClientId, SecretKey } from "@/lib/thirdweb-dev";
+import { createThirdwebClient } from "thirdweb";
+import { MediaRenderer } from "thirdweb/react";
+import { Event } from "@/types/event";
 
-export interface EventCardProps {
-  id: string;
-  title: string;
-  image: string;
-  date: string;
-  location: string;
-  price: string;
-  currency: string;
-  availableTickets: number;
-  tags?: string[];
-}
-
-export default function EventCard({
-  id,
-  title,
-  image,
-  date,
-  location,
-  price,
-  currency,
-  availableTickets,
-  tags = [],
-}: EventCardProps) {
+export default function EventCard({ props }: { props: Event }) {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const client = createThirdwebClient({
+    clientId: ClientId as string,
+    secretKey: SecretKey,
+  });
 
   return (
     <motion.div
@@ -42,15 +28,15 @@ export default function EventCard({
     >
       <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl overflow-hidden">
         <div className="relative">
-          <Link href={`/events/${id}`}>
+          <Link href={`/events/${props.eventId}`}>
             <div className="relative h-48 overflow-hidden">
-              <Image
-                src={image || "/placeholder.svg"}
-                alt={title}
-                width={400}
-                height={200}
+              <MediaRenderer
+                client={client}
+                src={props.imageUri}
+                alt="Event"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
+
               <div className="absolute inset-0 bg-gradient-to-t from-[#030303] to-transparent opacity-60" />
             </div>
           </Link>
@@ -65,7 +51,7 @@ export default function EventCard({
               }`}
             />
           </button>
-
+          {/* 
           {tags.length > 0 && (
             <div className="absolute top-3 left-3 flex flex-wrap gap-2">
               {tags.map((tag, index) => (
@@ -77,44 +63,48 @@ export default function EventCard({
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="p-4">
-          <Link href={`/events/${id}`}>
+          <Link href={`/events/${props.eventId}`}>
             <h3 className="text-lg font-semibold text-white mb-2 line-clamp-1 group-hover:text-indigo-400 transition-colors">
-              {title}
+              {props.name}
             </h3>
           </Link>
 
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-indigo-400" />
-              <span className="text-sm text-white/70">{date}</span>
+              <span className="text-sm text-white/70">{props.startDate}</span>
             </div>
 
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-rose-400" />
               <span className="text-sm text-white/70 line-clamp-1">
-                {location}
+                {props.location}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <Ticket className="w-4 h-4 text-amber-400" />
               <span className="text-sm text-white/70">
-                {availableTickets} tickets available
+                {Number(props.soldOut)} tickets available
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-lg font-bold text-white">{price}</span>
-              <span className="text-sm text-white/60 ml-1">{currency}</span>
+              <span className="text-lg font-bold text-white">
+                {props.owner}
+              </span>
+              <span className="text-sm text-white/60 ml-1">
+                {props.location}
+              </span>
             </div>
 
-            <Link href={`/events/${id}`}>
+            <Link href={`/events/${props.eventId}`}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ChevronRight } from "lucide-react"
-import Link from "next/link"
-import EventCard, { type EventCardProps } from "./event-card"
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import EventCard from "./event-card";
+import { Event } from "@/types/event";
 
 interface FeaturedEventsProps {
-  title: string
-  description?: string
-  events: EventCardProps[]
-  viewAllLink?: string
+  title: string;
+  description?: string;
+  events: Event[];
+  viewAllLink?: string;
 }
 
 export default function FeaturedEvents({
@@ -52,7 +53,10 @@ export default function FeaturedEvents({
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <Link href={viewAllLink} className="flex items-center gap-1 text-white/70 hover:text-white group">
+            <Link
+              href={viewAllLink}
+              className="flex items-center gap-1 text-white/70 hover:text-white group"
+            >
               <span>View all</span>
               <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
@@ -61,11 +65,10 @@ export default function FeaturedEvents({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {events.map((event, index) => (
-            <EventCard key={index} {...event} />
+            <EventCard key={index} props={event} />
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
-

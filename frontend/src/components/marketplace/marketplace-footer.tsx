@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Facebook, Twitter, Instagram, Youtube } from "lucide-react"
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
 export default function MarketplaceFooter() {
   const footerLinks = [
@@ -42,14 +42,14 @@ export default function MarketplaceFooter() {
         { label: "Resources", href: "#" },
       ],
     },
-  ]
+  ];
 
   const socialLinks = [
     { icon: <Facebook className="w-5 h-5" />, href: "#" },
     { icon: <Twitter className="w-5 h-5" />, href: "#" },
     { icon: <Instagram className="w-5 h-5" />, href: "#" },
     { icon: <Youtube className="w-5 h-5" />, href: "#" },
-  ]
+  ];
 
   return (
     <footer className="w-full py-12 bg-[#030303] border-t border-white/[0.05]">
@@ -67,7 +67,10 @@ export default function MarketplaceFooter() {
               <ul className="space-y-2">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <Link href={link.href} className="text-white/60 hover:text-white transition-colors">
+                    <Link
+                      href={link.href}
+                      className="text-white/60 hover:text-white transition-colors"
+                    >
                       {link.label}
                     </Link>
                   </li>
@@ -86,7 +89,8 @@ export default function MarketplaceFooter() {
             className="mb-4 md:mb-0"
           >
             <p className="text-white/40 text-sm">
-              &copy; {new Date().getFullYear()} NFT Ticketing Platform. All rights reserved.
+              &copy; {new Date().getFullYear()} NFT Ticketing Platform. All
+              rights reserved.
             </p>
           </motion.div>
 
@@ -110,6 +114,5 @@ export default function MarketplaceFooter() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
-
