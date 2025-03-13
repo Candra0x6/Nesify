@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  username           String
+  walletAddress      String              @unique
+  profileImageId     String?             @unique
+  profileImage       Image?              @relation(fields: [profileImageId], references: [id])
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  role               Role                @default(USER)
+  xp                 Int                 @default(0)
+  level              Int                 @default(1)
+  dailyLogins        DailyLogin[]
+  missionCompletions MissionCompletion[]
+  userRewards        UserReward[]
+  tickets            Ticket[]
+}
+
+model DailyLogin {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  loginDate DateTime
+}
+
+model Mission {
+  id                 String              @id @default(cuid())
+  name               String
+  description        String
+  xpReward           Int
+  startDate          DateTime?
+  endDate            DateTime?
+  missionCompletions MissionCompletion[]
+}
+
+model MissionCompletion {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  mission     Mission  @relation(fields: [missionId], references: [id])
+  missionId   String
+  completedAt DateTime @default(now())
+  claimed     Boolean  @default(false)
+}
+
+model Level {
+  id                String       @id @default(cuid())
+  levelNumber       Int          @unique
+  xpThreshold       Int
+  rewardName        String
+  rewardDescription String?
+  rewardValue       Int          @default(0)
+  userRewards       UserReward[]
+}
+
+model UserReward {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  level      Level    @relation(fields: [levelId], references: [id])
+  levelId    String
+  receivedAt DateTime @default(now())
+  claimed    Boolean  @default(false)
+}
+
+model Ticket {
+  id           String    @id @default(cuid())
+  tokenId      String    @unique // Menyimpan token ID dari onchain
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  eventId      String // Mengacu pada eventId dari onchain (sesuaikan tipe jika perlu)
+  validated    Boolean   @default(false)
+  purchaseDate DateTime? // Opsional, tanggal pembelian tiket
+  buyerName    String? // Opsional, nama pembeli
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  user      User?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+}
