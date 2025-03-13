@@ -13,6 +13,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@types/node": "^22.13.5",
+    "hardhat-gas-reporter": "^2.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
@@ -30,7 +31,7 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.4",
     "hardhat": "^2.9.5",
-    "hardhat-gas-reporter": "^1.0.8",
+    "html5-qrcode": "^2.3.8",
     "nft.storage": "^6.1.0",
     "solidity-coverage": "^0.7.20",
     "wagmi": "^2.14.11"
