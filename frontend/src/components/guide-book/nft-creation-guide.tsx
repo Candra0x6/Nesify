@@ -14,7 +14,6 @@ import {
   Lightbulb,
   AlertCircle,
   Star,
-  Link,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -502,16 +501,14 @@ export default function NFTCreationGuide() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/guides">
-              <motion.button
-                onClick={() => updateUserRole()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 rounded-full bg-primary text-white font-medium"
-              >
-                Create Event Now
-              </motion.button>
-            </Link>
+            <motion.button
+              onClick={() => updateUserRole()}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 rounded-full bg-primary text-white font-medium"
+            >
+              Create Event Now
+            </motion.button>
           </div>
         </div>
       </motion.div>
