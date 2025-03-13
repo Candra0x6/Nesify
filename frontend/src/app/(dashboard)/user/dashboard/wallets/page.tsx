@@ -1,159 +1,146 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet, User, Clock } from "lucide-react";
+import { Wallet, User, WalletIcon } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
-// Mock data
-const connectedWallets = [
-  {
-    id: "wallet-1",
-    name: "MetaMask",
-    address: "0x1234567890abcdef1234567890abcdef12345678",
-    icon: "/placeholder.svg?height=32&width=32",
-    isPrimary: true,
-    network: "Ethereum",
-  },
-  {
-    id: "wallet-2",
-    name: "Phantom",
-    address: "5FHwkrdxDuwHmRWRq5zQgUGQT3z9DFhyMNEorySFi1Hq",
-    icon: "/placeholder.svg?height=32&width=32",
-    isPrimary: false,
-    network: "Solana",
-  },
-];
+import WalletConnectionCard from "@/components/wallet/wallet-connection-card";
+import ProfileSettings from "@/components/wallet/profile-settings";
+import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
+import { updateUser, getUserByWalletAddress } from "@/lib/services/api/user";
+import { updateUserProfileImage } from "@/lib/services/api/image";
 
-const networks = [
-  {
-    id: "network-1",
-    name: "Ethereum",
-    icon: "/placeholder.svg?height=32&width=32",
-    isActive: true,
-  },
-  {
-    id: "network-2",
-    name: "Polygon",
-    icon: "/placeholder.svg?height=32&width=32",
-    isActive: false,
-  },
-  {
-    id: "network-3",
-    name: "Solana",
-    icon: "/placeholder.svg?height=32&width=32",
-    isActive: false,
-  },
-];
-
-const transactions = [
-  {
-    id: "tx-1",
-    type: "purchase",
-    title: "Summer Music Festival 2023",
-    date: "Jul 10, 2023",
-    amount: "0.15",
-    currency: "ETH",
-    status: "completed",
-    image: "/placeholder.svg?height=40&width=40",
-    txHash: "0x1234567890abcdef1234567890abcdef12345678",
-  },
-  {
-    id: "tx-2",
-    type: "sale",
-    title: "NBA Finals 2023",
-    date: "Jun 15, 2023",
-    amount: "0.25",
-    currency: "ETH",
-    status: "completed",
-    image: "/placeholder.svg?height=40&width=40",
-    txHash: "0x1234567890abcdef1234567890abcdef12345679",
-  },
-  {
-    id: "tx-3",
-    type: "reward",
-    title: "XP Reward: Daily Login Streak",
-    date: "Jul 20, 2023",
-    amount: "75",
-    currency: "XP",
-    status: "completed",
-  },
-  {
-    id: "tx-4",
-    type: "purchase",
-    title: "Blockchain Conference",
-    date: "Aug 1, 2023",
-    amount: "0.08",
-    currency: "ETH",
-    status: "pending",
-    image: "/placeholder.svg?height=40&width=40",
-    txHash: "0x1234567890abcdef1234567890abcdef12345680",
-  },
-];
-
-const profile = {
-  username: "cryptofan123",
-  email: "user@example.com",
-  avatar: "/placeholder.svg?height=96&width=96",
+// Define the ProfileData type to match the ProfileSettings component
+interface ProfileData {
+  username: string;
+  avatar: string;
   notifications: {
-    email: true,
-    push: true,
-    sms: false,
-  },
-};
+    email: boolean;
+    push: boolean;
+    sms: boolean;
+  };
+}
 
-const referralData = {
-  referralCode: "CRYPTOFAN123",
-  referralLink: "https://nfttickets.example/ref/cryptofan123",
-  referralStats: {
-    totalReferrals: 5,
-    pendingReferrals: 2,
-    xpEarned: 300,
-  },
-};
+// Define a type that extends the base User type with profileImage
+interface UserWithProfileImage {
+  id: string;
+  walletAddress: string;
+  username: string;
+  profileImageId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  role: string;
+  xp: number;
+  level: number;
+  profileImage?: {
+    id: string;
+    url: string;
+  } | null;
+}
 
 export default function WalletPage() {
-  const [activeTab, setActiveTab] = useState<
-    "wallet" | "transactions" | "profile" | "security" | "referral"
-  >("wallet");
+  const [activeTab, setActiveTab] = useState<"wallet" | "profile">("wallet");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    username: "",
+    avatar: "/placeholder.svg?height=96&width=96",
+    notifications: {
+      email: true,
+      push: true,
+      sms: false,
+    },
+  });
 
-  const handleConnectWallet = () => {
-    // Implement wallet connection logic
-    console.log("Connect wallet");
-  };
+  const activeAccount = useActiveAccount();
+  const activeChain = useActiveWalletChain();
 
-  const handleDisconnectWallet = (id: string) => {
-    // Implement wallet disconnection logic
-    console.log("Disconnect wallet", id);
-  };
+  // Fetch user data if wallet is connected
+  const { data: userData } = useQuery({
+    queryKey: ["user", activeAccount?.address],
+    queryFn: () => getUserByWalletAddress(activeAccount?.address || ""),
+    enabled: !!activeAccount?.address,
+  });
+
+  // Update user data when userData changes
+  useEffect(() => {
+    if (userData?.result) {
+      const user = userData.result as UserWithProfileImage;
+      setUserId(user.id);
+
+      // Access the profile image URL from the user data
+      const avatarUrl =
+        user.profileImage?.url || "/placeholder.svg?height=96&width=96";
+
+      setProfileData({
+        username: user.username || "",
+        avatar: avatarUrl,
+        notifications: {
+          email: true,
+          push: true,
+          sms: false,
+        },
+      });
+    }
+  }, [userData]);
+
+  // Mutation for updating user profile data
+  const { mutate: mutateUserProfile } = useMutation({
+    mutationFn: (data: ProfileData) => {
+      if (!userId) throw new Error("User ID is required");
+
+      return updateUser(userId, {
+        username: data.username,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Profile updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to update profile: ${error.message}`);
+    },
+  });
+
+  // Mutation for updating profile image
+  const { mutate: mutateProfileImage } = useMutation({
+    mutationFn: (file: File) => {
+      if (!userId) throw new Error("User ID is required");
+      return updateUserProfileImage(userId, file);
+    },
+    onSuccess: () => {
+      toast.success("Profile image updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to update profile image: ${error.message}`);
+    },
+  });
+
+  // Safe wallet details to prevent type errors
+  const walletDetails = activeAccount?.address
+    ? [
+        {
+          id: `${activeChain?.name || "Unknown"}-Wallet`,
+          name: activeChain?.name || "Unknown",
+          address: activeAccount?.address || "No address",
+          icon: <WalletIcon />,
+          isPrimary: true,
+          network: activeChain?.nativeCurrency?.name || "Unknown",
+        },
+      ]
+    : [];
 
   const handleSetPrimaryWallet = (id: string) => {
     // Implement set primary wallet logic
     console.log("Set primary wallet", id);
   };
 
-  const handleSwitchNetwork = (id: string) => {
-    // Implement network switching logic
-    console.log("Switch network", id);
-  };
+  const handleUpdateProfile = (updatedProfile: ProfileData) => {
+    // Update user profile information (username, etc.)
+    mutateUserProfile(updatedProfile);
 
-  const handleToggle2FA = (enabled: boolean) => {
-    // Implement 2FA toggle logic
-    console.log("Toggle 2FA", enabled);
-  };
-
-  const handleChangePassword = () => {
-    // Implement password change logic
-    console.log("Change password");
-  };
-
-  const handleManageDevices = () => {
-    // Implement device management logic
-    console.log("Manage devices");
-  };
-
-  const handleUpdateProfile = (updatedProfile: any) => {
-    // Implement profile update logic
-    console.log("Update profile", updatedProfile);
+    // Note: For file uploads, we'll let the ProfileSettings component handle this separately
+    // through its own file input onChange handler, which can call mutateProfileImage directly
   };
 
   return (
@@ -178,7 +165,7 @@ export default function WalletPage() {
               onClick={() => setActiveTab("wallet")}
               className={`px-4 py-2 rounded-full text-sm flex items-center gap-2 ${
                 activeTab === "wallet"
-                  ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
+                  ? "bg-primary text-white"
                   : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
               }`}
             >
@@ -189,24 +176,10 @@ export default function WalletPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveTab("transactions")}
-              className={`px-4 py-2 rounded-full text-sm flex items-center gap-2 ${
-                activeTab === "transactions"
-                  ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                  : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-              }`}
-            >
-              <Clock className="w-4 h-4" />
-              <span>Transactions</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab("profile")}
               className={`px-4 py-2 rounded-full text-sm flex items-center gap-2 ${
                 activeTab === "profile"
-                  ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
+                  ? "bg-primary text-white"
                   : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
               }`}
             >
@@ -214,6 +187,26 @@ export default function WalletPage() {
               <span>Profile</span>
             </motion.button>
           </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="space-y-8">
+          {activeTab === "wallet" && (
+            <>
+              <WalletConnectionCard
+                connectedWallets={walletDetails}
+                onSetPrimary={handleSetPrimaryWallet}
+              />
+            </>
+          )}
+
+          {activeTab === "profile" && (
+            <ProfileSettings
+              profile={profileData}
+              onUpdateProfile={handleUpdateProfile}
+              onImageUpload={mutateProfileImage}
+            />
+          )}
         </div>
       </div>
     </main>

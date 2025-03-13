@@ -1,9 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Pacifico } from "next/font/google";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -15,15 +12,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LogOut, Search } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { SidebarMenuType } from "./dashboard-layout";
-import { useRouter } from "next/navigation";
-
-const pacifico = Pacifico({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-pacifico",
-});
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function DashboardSidebar({
   sidebarMenus,
@@ -31,38 +23,28 @@ export default function DashboardSidebar({
   sidebarMenus: SidebarMenuType[];
 }) {
   const router = useRouter();
-  return (
-    <Sidebar variant="floating" className="border-r border-white/[0.08]  ">
-      <SidebarHeader className="p-4 ">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex items-center gap-2 px-2"
-        >
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-rose-500">
-            <Image
-              src="https://kokonutui.com/logo.svg"
-              alt="Kokonut UI"
-              width={20}
-              height={20}
-            />
-          </div>
-          <span className={cn("text-xl text-white", pacifico.className)}>
-            Kokonut
-          </span>
-        </motion.div>
+  const pathname = usePathname();
 
-        <div className="mt-6 flex items-center gap-2 px-2">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full bg-white/[0.03] border border-white/[0.08] rounded-full py-2 pl-10 pr-4 text-sm text-white/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+  return (
+    <Sidebar variant="floating" className="border-r bg border-white/[0.08]  ">
+      <SidebarHeader className="p-4 ">
+        <Link
+          href="/"
+          className="flex items-center gap-2 border-white/[0.05] border-r pr-4"
+        >
+          <div className="relative w-8 h-8 md:w-10 md:h-10">
+            <Image
+              src={"/images/logo.jpg"}
+              alt="NFT Tickets"
+              width={500}
+              height={500}
+              className="rounded-full"
             />
           </div>
-        </div>
+          <div className="text-lg md:text-xl font-bold bg-clip-text text-white ">
+            Nesify
+          </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent className="px-2">
@@ -78,7 +60,7 @@ export default function DashboardSidebar({
                   key={item.title}
                 >
                   <SidebarMenuButton
-                    isActive={item.isActive}
+                    isActive={pathname === item.path}
                     className="text-white/60 hover:text-white data-[active=true]:bg-white/[0.08] data-[active=true]:text-white"
                   >
                     <item.icon className="h-5 w-5" />

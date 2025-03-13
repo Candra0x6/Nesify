@@ -1,145 +1,90 @@
+"use client";
 import XPProgress from "@/components/xp/xp-progress";
-import MissionCard from "@/components/xp/mission-card";
-import RewardCard from "@/components/xp/reward-card";
 import LeaderboardCard from "@/components/xp/leaderboard-card";
-
-// Mock data
-const dailyMissions = [
-  {
-    id: "daily-1",
-    title: "Daily Login",
-    description: "Log in to the platform to earn daily XP",
-    xpReward: 10,
-    isCompleted: true,
-    isDaily: true,
-  },
-  {
-    id: "daily-2",
-    title: "Browse 5 Events",
-    description: "Explore at least 5 different events today",
-    xpReward: 15,
-    isDaily: true,
-    progress: {
-      current: 3,
-      total: 5,
-    },
-    expiresIn: "8 hours",
-  },
-  {
-    id: "daily-3",
-    title: "Share an Event",
-    description: "Share an event on social media",
-    xpReward: 20,
-    isDaily: true,
-    expiresIn: "8 hours",
-  },
-];
-
-const weeklyMissions = [
-  {
-    id: "weekly-1",
-    title: "Purchase a Ticket",
-    description: "Buy any NFT ticket this week",
-    xpReward: 50,
-  },
-  {
-    id: "weekly-2",
-    title: "Attend an Event",
-    description: "Scan your NFT ticket at an event",
-    xpReward: 100,
-  },
-  {
-    id: "weekly-3",
-    title: "Refer a Friend",
-    description: "Invite a friend who creates an account",
-    xpReward: 75,
-    progress: {
-      current: 1,
-      total: 3,
-    },
-  },
-];
-
-const rewards = [
-  {
-    id: "reward-1",
-    title: "10% Discount",
-    description: "Get 10% off your next ticket purchase",
-    xpCost: 200,
-    image: "/placeholder.svg?height=300&width=400",
-    category: "Discount",
-  },
-  {
-    id: "reward-2",
-    title: "VIP Access",
-    description: "Upgrade any ticket to VIP status",
-    xpCost: 500,
-    image: "/placeholder.svg?height=300&width=400",
-    category: "Access",
-  },
-  {
-    id: "reward-3",
-    title: "Exclusive NFT",
-    description: "Limited edition collectible NFT artwork",
-    xpCost: 1000,
-    image: "/placeholder.svg?height=300&width=400",
-    category: "Collectible",
-  },
-  {
-    id: "reward-4",
-    title: "Meet & Greet Pass",
-    description: "Exclusive artist meet & greet opportunity",
-    xpCost: 2000,
-    image: "/placeholder.svg?height=300&width=400",
-    category: "Experience",
-    isLocked: true,
-  },
-];
-
-const leaderboardUsers = [
-  {
-    id: "user-1",
-    name: "Alex Johnson",
-    avatar: "/placeholder.svg?height=80&width=80",
-    xp: 3450,
-    rank: 1,
-    level: 12,
-  },
-  {
-    id: "user-2",
-    name: "Sarah Williams",
-    avatar: "/placeholder.svg?height=80&width=80",
-    xp: 3120,
-    rank: 2,
-    level: 11,
-  },
-  {
-    id: "user-3",
-    name: "Michael Chen",
-    avatar: "/placeholder.svg?height=80&width=80",
-    xp: 2890,
-    rank: 3,
-    level: 10,
-  },
-  {
-    id: "user-4",
-    name: "Emma Rodriguez",
-    avatar: "/placeholder.svg?height=80&width=80",
-    xp: 2450,
-    rank: 4,
-    level: 9,
-  },
-  {
-    id: "user-5",
-    name: "You",
-    avatar: "/placeholder.svg?height=80&width=80",
-    xp: 1850,
-    rank: 5,
-    level: 7,
-  },
-];
+import RewardCard from "@/components/xp/reward-card";
+import { getLeaderboard, getUserLevel } from "@/lib/services/api";
+import { useEffect } from "react";
+import { RewardWithLevel, UserLevel } from "@/utils/type";
+import { useUser } from "@/hooks/useUser";
+import { useState } from "react";
+import { getUserRewards } from "@/lib/services/api";
+import toast from "react-hot-toast";
+import { claimReward } from "@/lib/services/api/rewards";
+import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function RewardsPage() {
+  const { user } = useUser();
+  const [rewards, setRewards] = useState<RewardWithLevel[]>([]);
+  const [userLevel, setUserLevel] = useState<UserLevel | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { data: leaderboardData } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: () => getLeaderboard(),
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.id) return;
+
+      setLoading(true);
+      try {
+        // Fetch the user's rewards
+        const rewardsResponse = await getUserRewards(user.id);
+        if (rewardsResponse.result) {
+          setRewards(rewardsResponse.result);
+        }
+
+        // Fetch the user's level info
+        const levelResponse = await getUserLevel(user.id);
+        if (levelResponse.result) {
+          setUserLevel(levelResponse.result);
+        }
+      } catch (error) {
+        console.error("Error fetching rewards:", error);
+        toast.error("Failed to load rewards");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.id]);
+
+  const handleClaimReward = async (rewardId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const response = await claimReward(user.id, rewardId);
+
+      if (response.result) {
+        // Update the rewards list to reflect the claimed status
+        setRewards(
+          rewards.map((reward) =>
+            reward.id === rewardId ? { ...reward, claimed: true } : reward
+          )
+        );
+        if (userLevel) {
+          setUserLevel({
+            ...userLevel,
+            currentXp: (userLevel.currentXp +
+              response.result.level.rewardValue) as number,
+          });
+        }
+
+        toast.success(
+          `Reward claimed successfully! You received a ${response.result.level.rewardValue}% discount coupon.`
+        );
+      } else {
+        toast.error(response.error || "Failed to claim reward");
+      }
+    } catch (error) {
+      console.error("Error claiming reward:", error);
+      toast.error("Failed to claim reward");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#030303]">
       <div className="container mx-auto px-4 md:px-6 py-12">
@@ -152,56 +97,49 @@ export default function RewardsPage() {
             the platform. Redeem your XP for exclusive rewards and benefits.
           </p>
         </div>
-
-        {/* XP Progress */}
-        <div className="mb-12">
-          <XPProgress
-            currentXP={1850}
-            nextLevelXP={2500}
-            level={7}
-            rank="Event Explorer"
-          />
-        </div>
-
-        {/* Missions */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
-            XP Missions
-          </h2>
-
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold text-white mb-4">
-              Claimable Missions
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {dailyMissions.map((mission) => (
-                <MissionCard key={mission.id} {...mission} />
-              ))}
+        {loading ? (
+          <div className="flex justify-center items-center h-screen">
+            <Loader2 className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <>
+            {/* XP Progress */}
+            <div className="mb-12">
+              <XPProgress
+                currentXP={userLevel?.currentXp || 0}
+                nextLevelXP={userLevel?.currentLevel || 0}
+                level={userLevel?.currentLevel || 0}
+                rank={userLevel?.currentBadge || "Event Explorer"}
+              />
             </div>
-          </div>
-        </div>
 
-        {/* Rewards */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
-            Redeem Rewards
-          </h2>
+            {/* Rewards */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
+                Redeem Rewards
+              </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {rewards.map((reward) => (
-              <RewardCard key={reward.id} {...reward} />
-            ))}
-          </div>
-        </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {rewards.map((reward: RewardWithLevel) => (
+                  <RewardCard
+                    key={reward.id}
+                    reward={reward}
+                    onClaim={handleClaimReward}
+                  />
+                ))}
+              </div>
+            </div>
 
-        {/* Leaderboard */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
-            XP Leaderboard
-          </h2>
+            {/* Leaderboard */}
 
-          <LeaderboardCard users={leaderboardUsers} />
-        </div>
+            <div>
+              <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
+                XP Leaderboard
+              </h2>
+              <LeaderboardCard data={leaderboardData?.result || []} />
+            </div>
+          </>
+        )}
       </div>
     </main>
   );

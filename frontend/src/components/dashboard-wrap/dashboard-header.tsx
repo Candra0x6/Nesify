@@ -1,6 +1,7 @@
 import React from "react";
 import { SidebarTrigger } from "../ui/sidebar";
-import { Bell, User2 } from "lucide-react";
+import { Bell } from "lucide-react";
+import SignButton from "../elements/sign-button";
 
 function DashboardHeader({ pathname }: { pathname: string }) {
   return (
@@ -17,9 +18,7 @@ function DashboardHeader({ pathname }: { pathname: string }) {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-rose-500 flex items-center justify-center">
-            <User2 className="h-4 w-4 text-white" />
-          </div>
+          <SignButton />
         </div>
       </div>
     </header>

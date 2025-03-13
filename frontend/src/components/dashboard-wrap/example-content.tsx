@@ -68,7 +68,7 @@ export default function DashboardContent() {
             </span>
           </h2>
           <p className="text-white/40 mt-1">
-            Here's what's happening with your projects today.
+            Here&apos;s what&apos;s happening with your projects today.
           </p>
         </motion.div>
 
