@@ -6,7 +6,6 @@ import { Download, QrCode, Search, Ticket } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,43 +21,80 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// Mock data for tickets
-const tickets = [
-  {
-    id: "TICKET-001",
-    event: "Summer Music Festival",
-    type: "VIP",
-    holder: "John Doe",
-    purchaseDate: "2024-02-25",
-    status: "valid",
-    price: "$150.00",
-  },
-  {
-    id: "TICKET-002",
-    event: "Tech Conference 2024",
-    type: "General Admission",
-    holder: "Jane Smith",
-    purchaseDate: "2024-02-24",
-    status: "used",
-    price: "$50.00",
-  },
-  // Add more tickets...
-];
+import { useQuery } from "@tanstack/react-query";
+import { getUserTickets } from "@/lib/services/api/ticket";
+import { useUser } from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
 
 export default function TicketsPage() {
+  const { user } = useUser();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState<string | undefined>(undefined);
 
-  const filteredTickets = tickets.filter((ticket) => {
-    const matchesSearch =
-      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.holder.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.event.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || ticket.status === statusFilter;
-    return matchesSearch && matchesStatus;
+  const { data: tickets } = useQuery({
+    queryKey: ["tickets", user?.id],
+    queryFn: () => getUserTickets(user?.id || ""),
+    enabled: !!user?.id,
   });
+
+  // Function to check if a date is within the specified time range
+  const isDateInRange = (
+    date: Date | null | undefined,
+    rangeInDays: number
+  ): boolean => {
+    if (!date) return false;
+
+    const purchaseDate = new Date(date);
+    const now = new Date();
+
+    // Calculate the time difference in milliseconds
+    const timeDiff = now.getTime() - purchaseDate.getTime();
+
+    // Convert milliseconds to days
+    const daysDiff = timeDiff / (1000 * 3600 * 24);
+
+    // Check if the date is within the range
+    return daysDiff <= rangeInDays;
+  };
+
+  const filteredTickets = tickets?.result?.filter((ticket) => {
+    // Search query filter
+    const matchesSearch =
+      !searchQuery ||
+      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.eventId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.tokenId.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Date filter
+    let matchesDate = true;
+    if (dateFilter) {
+      const purchaseDate = ticket.purchaseDate
+        ? new Date(ticket.purchaseDate)
+        : null;
+
+      switch (dateFilter) {
+        case "1 week ago":
+          matchesDate = isDateInRange(purchaseDate, 7);
+          break;
+        case "1 month ago":
+          matchesDate = isDateInRange(purchaseDate, 30);
+          break;
+        case "3 months ago":
+          matchesDate = isDateInRange(purchaseDate, 90);
+          break;
+        case "6 months ago":
+          matchesDate = isDateInRange(purchaseDate, 180);
+          break;
+        default:
+          matchesDate = true;
+      }
+    }
+
+    return matchesSearch && matchesDate;
+  });
+
+  const totalTickets = tickets?.result?.length || 0;
 
   return (
     <div className="space-y-6">
@@ -66,7 +102,7 @@ export default function TicketsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Tickets</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted- ">
             Manage and verify tickets for all events
           </p>
         </div>
@@ -74,10 +110,6 @@ export default function TicketsPage() {
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export
-          </Button>
-          <Button>
-            <QrCode className="mr-2 h-4 w-4" />
-            Scan Ticket
           </Button>
         </div>
       </div>
@@ -90,7 +122,7 @@ export default function TicketsPage() {
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
+            <div className="text-2xl font-bold">{totalTickets}</div>
             <p className="text-xs text-muted-foreground">Across all events</p>
           </CardContent>
         </Card>
@@ -111,15 +143,18 @@ export default function TicketsPage() {
             className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           />
         </form>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select
+          value={dateFilter}
+          onValueChange={(value: string) => setDateFilter(value)}
+        >
           <SelectTrigger className="w-[180px] bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-xl text-white py-6">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by date" />
           </SelectTrigger>
           <SelectContent className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl text-white">
-            <SelectItem value="all">All Events</SelectItem>
-            <SelectItem value="upcoming">Upcoming</SelectItem>
-            <SelectItem value="live">Live</SelectItem>
-            <SelectItem value="past">Past</SelectItem>
+            <SelectItem value="1 week ago">Last week</SelectItem>
+            <SelectItem value="1 month ago">Last month</SelectItem>
+            <SelectItem value="3 months ago">Last 3 months</SelectItem>
+            <SelectItem value="6 months ago">Last 6 months</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -139,45 +174,55 @@ export default function TicketsPage() {
               <TableHead>Holder</TableHead>
               <TableHead>Purchase Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Scan</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTickets.map((ticket) => (
+            {filteredTickets?.map((ticket) => (
               <TableRow
                 key={ticket.id}
                 className="border-white/[0.08] hover:bg-white/[0.02]"
               >
                 <TableCell className="font-medium">{ticket.id}</TableCell>
-                <TableCell>{ticket.event}</TableCell>
-                <TableCell>{ticket.type}</TableCell>
-                <TableCell>{ticket.holder}</TableCell>
+                <TableCell>{ticket.eventId}</TableCell>
+                <TableCell>{ticket.tokenId}</TableCell>
+                <TableCell>{ticket.userId}</TableCell>
                 <TableCell>
-                  {new Date(ticket.purchaseDate).toLocaleDateString()}
+                  {ticket.purchaseDate
+                    ? new Date(ticket.purchaseDate).toLocaleDateString()
+                    : "N/A"}
                 </TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      ticket.status === "valid"
+                      ticket.validated
                         ? "bg-green-100 text-green-700"
-                        : ticket.status === "used"
-                        ? "bg-gray-100 text-gray-700"
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {ticket.status.charAt(0).toUpperCase() +
-                      ticket.status.slice(1)}
+                    {ticket.validated ? "Valid" : "Invalid"}
                   </span>
                 </TableCell>
-                <TableCell>{ticket.price}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">
-                    View
+                <TableCell>
+                  <Button
+                    onClick={() =>
+                      router.push(`/admin/dashboard/tickets/${ticket.id}/scan`)
+                    }
+                    className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl text-white"
+                  >
+                    <QrCode className="mr-2 h-4 w-4" />
+                    Scan Ticket
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
+            {(!filteredTickets || filteredTickets.length === 0) && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8">
+                  No tickets found matching your filters
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </motion.div>

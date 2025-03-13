@@ -1,8 +1,7 @@
+"use client";
 import DashboardOverview from "@/components/admin/dashboard-overview";
 import React from "react";
 
-function OverviewPage() {
+export default function Overview() {
   return <DashboardOverview />;
 }
-
-export default OverviewPage;

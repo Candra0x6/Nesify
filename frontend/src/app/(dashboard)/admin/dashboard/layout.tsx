@@ -8,11 +8,34 @@ import {
   LayoutDashboard,
   TicketIcon,
   CalendarCog,
-  Users,
   CreditCardIcon,
 } from "lucide-react";
+import { useUser } from "@/hooks/useUser";
+import { getUserById } from "@/lib/services/api/user";
+import { redirect } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useActiveAccount } from "thirdweb/react";
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
+  const account = useActiveAccount();
+
+  const { data: userRole } = useQuery({
+    queryKey: ["userRole"],
+    queryFn: () => getUserById(user?.id || ""),
+  });
+
+  if (!account?.address) {
+    redirect("/");
+  }
+  if (!user) {
+    return redirect("/");
+  }
+
+  if (userRole?.result?.role !== "ADMIN") {
+    return redirect("/user/dashboard");
+  }
+
   return (
     <DashboardLayout sidebarMenus={sidebarMenus}>
       <main className="p-4">{children}</main>
@@ -39,11 +62,7 @@ const sidebarMenus: SidebarMenuType[] = [
     icon: TicketIcon,
     path: "/admin/dashboard/tickets",
   },
-  {
-    title: "Customers",
-    icon: Users,
-    path: "/admin/dashboard/customers",
-  },
+
   {
     title: "Payouts",
     icon: CreditCardIcon,

@@ -3,8 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Download } from "lucide-react";
-import { DollarSign } from "lucide-react"; // Import DollarSign
+import { DollarSign } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -71,25 +70,27 @@ export default function PayoutsPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-white">
             Payouts & Earnings
           </h1>
           <p className="text-muted-foreground">
             Manage your earnings and withdraw funds
           </p>
         </div>
-        <Button variant="outline">
-          <Download className="mr-2 h-4 w-4" />
-          Export History
-        </Button>
       </div>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl text-white active:bg-white/[0.02] active:text-white">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+        <TabsList className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl text-white ">
+          <TabsTrigger className="text-white" value="overview">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger className="text-white" value="withdraw">
+            Withdraw
+          </TabsTrigger>
+          <TabsTrigger className="text-white" value="settings">
+            Settings
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -150,7 +151,7 @@ export default function PayoutsPage() {
             {/* Connected Accounts */}
             <Card className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] text-white">
               <CardHeader>
-                <CardTitle>Connected Accounts</CardTitle>
+                <CardTitle className="">Connected Accounts</CardTitle>
                 <CardDescription>
                   Manage your withdrawal destinations
                 </CardDescription>
