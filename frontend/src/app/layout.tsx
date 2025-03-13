@@ -5,6 +5,7 @@ import ClientProvider from "@/components/providers/client-provider";
 import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/elements/navbar";
 import { XPToastProvider } from "@/hooks/useXPToast";
+import Footer from "@/components/marketplace/marketplace-footer";
 const Poppins = localFont({
   src: "../../public/fonts/Poppins-Regular.ttf",
   variable: "--font-poppins",
@@ -57,6 +58,7 @@ export default function RootLayout({
             </header>
             <Toaster />
             {children}
+            <Footer />
           </XPToastProvider>
         </ClientProvider>
       </body>

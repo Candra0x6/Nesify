@@ -21,7 +21,6 @@ import { getResaleTicketsByTokenId } from "@/lib/services/contracts/tickets";
 export default function ResaleTicketsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState("all");
-  const [ticketType, setTicketType] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: tickets, isLoading } = useQuery({
@@ -49,23 +48,17 @@ export default function ResaleTicketsPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[#030303]">
+    <main className="min-h-screen bg-[#030303] pt-20">
       <div className="w-full bg-[#030303]/80 backdrop-blur-md sticky top-0 z-30 border-b border-white/[0.05]">
         <div className="container mx-auto px-4 md:px-6 py-4">
           <div className="flex flex-col gap-4">
             {/* Navigation */}
             <div className="flex items-center justify-between">
               <Link
-                href="/marketplace"
+                href="/events"
                 className="text-white/70 hover:text-white transition-colors"
               >
                 ← Back to Marketplace
-              </Link>
-              <Link
-                href="/marketplace/tickets/my-listings"
-                className="text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                My Listings
               </Link>
             </div>
 
@@ -85,57 +78,6 @@ export default function ResaleTicketsPage() {
 
             {/* Quick Filters */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setTicketType("all")}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    ticketType === "all"
-                      ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                      : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-                  }`}
-                >
-                  All Tickets
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setTicketType("VIP")}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    ticketType === "VIP"
-                      ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                      : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-                  }`}
-                >
-                  VIP
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setTicketType("General")}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    ticketType === "General"
-                      ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                      : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-                  }`}
-                >
-                  General
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setTicketType("Early Bird")}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    ticketType === "Early Bird"
-                      ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                      : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-                  }`}
-                >
-                  Early Bird
-                </motion.button>
-              </div>
-
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -297,7 +239,6 @@ export default function ResaleTicketsPage() {
               onClick={() => {
                 setSearchQuery("");
                 setPriceRange("all");
-                setTicketType("all");
               }}
               className="bg-gradient-to-r from-indigo-500 to-rose-500 text-white border-0"
             >

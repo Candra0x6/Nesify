@@ -46,7 +46,7 @@ export default function EventDetailsPage() {
   const { mutate: buyTicket } = useBuyTicket();
 
   return (
-    <main className="min-h-screen bg-[#030303]">
+    <main className="min-h-screen bg-[#030303] pt-20">
       {/* Hero Section */}
       <div className="relative h-[40vh] md:h-[50vh] w-full">
         <MediaRenderer
@@ -62,7 +62,7 @@ export default function EventDetailsPage() {
         <div className="absolute bottom-0 left-0 w-full p-6">
           <div className="container mx-auto">
             <Link
-              href="/marketplace"
+              href="/events "
               className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4"
             >
               <ArrowLeft className="w-4 h-4" />

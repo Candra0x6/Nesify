@@ -55,7 +55,7 @@ export default function TicketDetailsPage() {
         <div className="absolute bottom-0 left-0 w-full p-6">
           <div className="container mx-auto">
             <Link
-              href="/marketplace/tickets"
+              href={`/events/${ticketData?.ticket.eventId}/tickets`}
               className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
