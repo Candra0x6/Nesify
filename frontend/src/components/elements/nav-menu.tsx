@@ -27,7 +27,7 @@ export default function NavMenu() {
     },
     {
       name: "Events",
-      href: "/marketplace/events",
+      href: "/events",
       icon: <Calendar className="w-4 h-4" />,
     },
   ];

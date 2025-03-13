@@ -1,15 +1,32 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Search, Calendar, MapPin, Tag, Filter, ChevronDown } from "lucide-react"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import {
+  Search,
+  Calendar,
+  MapPin,
+  Tag,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
+import { useState } from "react";
 
 export default function SearchFilters() {
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false);
 
-  const categories = ["All Events", "Concerts", "Sports", "Conferences", "Festivals", "Theater", "Online Events"]
-  const dates = ["Any Date", "Today", "This Week", "This Weekend", "This Month"]
-  const sortOptions = ["Trending", "Lowest Price", "Most Popular", "Newest Added"]
+  const dates = [
+    "Any Date",
+    "Today",
+    "This Week",
+    "This Weekend",
+    "This Month",
+  ];
+  const sortOptions = [
+    "Trending",
+    "Lowest Price",
+    "Most Popular",
+    "Newest Added",
+  ];
 
   return (
     <div className="w-full bg-[#030303]/80 backdrop-blur-md sticky top-0 z-30 border-b border-white/[0.05]">
@@ -29,23 +46,6 @@ export default function SearchFilters() {
 
           {/* Quick Filters */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
-              {categories.map((category, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    index === 0
-                      ? "bg-gradient-to-r from-indigo-500 to-rose-500 text-white"
-                      : "bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white"
-                  }`}
-                >
-                  {category}
-                </motion.button>
-              ))}
-            </div>
-
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -54,7 +54,11 @@ export default function SearchFilters() {
             >
               <Filter className="h-4 w-4" />
               <span className="text-sm">Filters</span>
-              <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${
+                  showFilters ? "rotate-180" : ""
+                }`}
+              />
             </motion.button>
           </div>
 
@@ -144,6 +148,5 @@ export default function SearchFilters() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

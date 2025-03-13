@@ -1,7 +1,6 @@
 "use client";
 
 import EventCard from "@/components/marketplace/event-card";
-import MarketplaceFooter from "@/components/marketplace/marketplace-footer";
 import { getAllEvents } from "@/lib/services/contracts/events";
 import { useQuery } from "@tanstack/react-query";
 import SearchFilters from "@/components/marketplace/search-filters";
@@ -14,7 +13,7 @@ export default function EventsClient() {
   });
 
   return (
-    <main className="min-h-screen bg-[#030303]">
+    <main className="min-h-screen bg-[#030303] pt-20">
       <SearchFilters />
 
       <div className="container mx-auto px-4 md:px-6 py-8">
@@ -36,8 +35,6 @@ export default function EventsClient() {
           </div>
         </section>
       </div>
-
-      <MarketplaceFooter />
     </main>
   );
 }

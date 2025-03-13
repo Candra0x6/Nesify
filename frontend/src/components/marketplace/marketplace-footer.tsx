@@ -4,46 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
-export default function MarketplaceFooter() {
-  const footerLinks = [
-    {
-      title: "About",
-      links: [
-        { label: "How It Works", href: "#" },
-        { label: "About Us", href: "#" },
-        { label: "Careers", href: "#" },
-        { label: "Press", href: "#" },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        { label: "Help Center", href: "#" },
-        { label: "Contact Us", href: "#" },
-        { label: "FAQ", href: "#" },
-        { label: "Wallet Support", href: "#" },
-      ],
-    },
-    {
-      title: "Legal",
-      links: [
-        { label: "Terms of Service", href: "#" },
-        { label: "Privacy Policy", href: "#" },
-        { label: "Cookie Policy", href: "#" },
-        { label: "Refund Policy", href: "#" },
-      ],
-    },
-    {
-      title: "For Organizers",
-      links: [
-        { label: "Create Event", href: "#" },
-        { label: "Organizer Portal", href: "#" },
-        { label: "Analytics", href: "#" },
-        { label: "Resources", href: "#" },
-      ],
-    },
-  ];
-
+export default function Footer() {
   const socialLinks = [
     { icon: <Facebook className="w-5 h-5" />, href: "#" },
     { icon: <Twitter className="w-5 h-5" />, href: "#" },
@@ -52,34 +13,8 @@ export default function MarketplaceFooter() {
   ];
 
   return (
-    <footer className="w-full py-12 bg-[#030303] border-t border-white/[0.05]">
+    <footer className="w-full py-5 bg-[#030303] ">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {footerLinks.map((section, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 * index }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-white font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <Link
-                      href={link.href}
-                      className="text-white/60 hover:text-white transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/[0.05]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -89,8 +24,7 @@ export default function MarketplaceFooter() {
             className="mb-4 md:mb-0"
           >
             <p className="text-white/40 text-sm">
-              &copy; {new Date().getFullYear()} NFT Ticketing Platform. All
-              rights reserved.
+              &copy; {new Date().getFullYear()} Nesify. All rights reserved.
             </p>
           </motion.div>
 
