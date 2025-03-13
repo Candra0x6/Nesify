@@ -361,7 +361,7 @@ contract TicketMarket is ERC1155Holder {
         uint256 currentIndex = 1;
         bool noSoldIds = true;
 
-        //We loop through resaleMarket, if a resale item is sold, we use that id as the id for our new resale item and overwrite the old item
+        // loop through resaleMarket, if a resale item is sold, ~ use that id as the id for our new resale item and overwrite the old item
         while (noSoldIds && currentIndex <= totalIdCount) {
             if (idToResaleTicket[currentIndex].sold == true) {
                 noSoldIds = false;
