@@ -1,72 +1,54 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Wallet, Shield, ExternalLink, Check, AlertTriangle } from "lucide-react"
-import Image from "next/image"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import { Wallet, Shield, ExternalLink, Check } from "lucide-react";
+import { useState } from "react";
 
 interface WalletConnectionCardProps {
   connectedWallets: {
-    id: string
-    name: string
-    address: string
-    icon: string
-    isPrimary: boolean
-    network: string
-  }[]
-  onConnectWallet: () => void
-  onDisconnectWallet: (id: string) => void
-  onSetPrimary: (id: string) => void
+    id: string;
+    name: string;
+    address: string;
+    icon: React.ReactNode;
+    isPrimary: boolean;
+    network: string;
+  }[];
+
+  onSetPrimary: (id: string) => void;
 }
 
 export default function WalletConnectionCard({
   connectedWallets,
-  onConnectWallet,
-  onDisconnectWallet,
+
   onSetPrimary,
 }: WalletConnectionCardProps) {
-  const [expandedWallet, setExpandedWallet] = useState<string | null>(null)
+  const [expandedWallet, setExpandedWallet] = useState<string | null>(null);
 
   const toggleWalletExpand = (id: string) => {
     if (expandedWallet === id) {
-      setExpandedWallet(null)
+      setExpandedWallet(null);
     } else {
-      setExpandedWallet(id)
+      setExpandedWallet(id);
     }
-  }
-
-  const formatAddress = (address: string) => {
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
-  }
+  };
 
   return (
     <div className="bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-sm border border-white/[0.08] rounded-xl p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white">Connected Wallets</h2>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onConnectWallet}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-rose-500 text-white text-sm font-medium flex items-center gap-2"
-        >
-          <Wallet className="w-4 h-4" />
-          <span>Connect Wallet</span>
-        </motion.button>
-      </div>
-
       {connectedWallets.length === 0 ? (
         <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl p-6 text-center">
           <div className="bg-white/[0.03] rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Wallet className="w-8 h-8 text-white/40" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No Wallets Connected</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            No Wallets Connected
+          </h3>
           <p className="text-white/60 mb-4">
-            Connect your wallet to purchase tickets, manage your NFTs, and earn rewards.
+            Connect your wallet to purchase tickets, manage your NFTs, and earn
+            rewards.
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onConnectWallet}
             className="px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-rose-500 text-white text-sm font-medium inline-flex items-center gap-2"
           >
             <Wallet className="w-4 h-4" />
@@ -85,13 +67,7 @@ export default function WalletConnectionCard({
                 onClick={() => toggleWalletExpand(wallet.id)}
               >
                 <div className="flex items-center gap-3">
-                  <Image
-                    src={wallet.icon || "/placeholder.svg"}
-                    alt={wallet.name}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
+                  {wallet.icon}
 
                   <div>
                     <div className="flex items-center gap-2">
@@ -103,7 +79,7 @@ export default function WalletConnectionCard({
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-white/60 text-sm">
-                      <span>{formatAddress(wallet.address)}</span>
+                      <span>{wallet.address}</span>
                       <span className="px-1.5 py-0.5 text-xs rounded-full bg-white/[0.03] border border-white/[0.08]">
                         {wallet.network}
                       </span>
@@ -124,7 +100,12 @@ export default function WalletConnectionCard({
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white/70 hover:text-white text-sm flex items-center gap-1"
-                      onClick={() => window.open(`https://etherscan.io/address/${wallet.address}`, "_blank")}
+                      onClick={() =>
+                        window.open(
+                          `https://etherscan.io/address/${wallet.address}`,
+                          "_blank"
+                        )
+                      }
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span>View on Explorer</span>
@@ -141,16 +122,6 @@ export default function WalletConnectionCard({
                         <span>Set as Primary</span>
                       </motion.button>
                     )}
-
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-rose-400 hover:text-rose-300 text-sm flex items-center gap-1"
-                      onClick={() => onDisconnectWallet(wallet.id)}
-                    >
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Disconnect</span>
-                    </motion.button>
                   </div>
                 </div>
               )}
@@ -164,6 +135,5 @@ export default function WalletConnectionCard({
         <span>Your wallet connection is secure and encrypted</span>
       </div>
     </div>
-  )
+  );
 }
-

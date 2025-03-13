@@ -1,33 +1,17 @@
 "use client";
 
+import { formatDate2 } from "@/lib/utils";
+import { Mission } from "@prisma/client";
 import { motion } from "framer-motion";
-import { Zap, Clock, CheckCircle, ArrowRight } from "lucide-react";
+import { Zap, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export interface MissionProps {
-  id: string;
-  title: string;
-  description: string;
-  xpReward: number;
-  isCompleted?: boolean;
-  isDaily?: boolean;
-  expiresIn?: string;
-  progress?: {
-    current: number;
-    total: number;
-  };
+interface MissionCardProps {
+  mission: Mission;
+  completed: boolean;
+  onComplete: () => void;
 }
-
-export default function MissionCard({
-  id,
-  title,
-  description,
-  xpReward,
-  isCompleted = false,
-  isDaily = false,
-  expiresIn,
-  progress,
-}: MissionProps) {
+export default function MissionCard(props: MissionCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,57 +19,41 @@ export default function MissionCard({
       transition={{ duration: 0.5 }}
       viewport={{ once: true }}
       className={`bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl p-5 ${
-        isCompleted ? "opacity-70" : ""
+        props.completed ? "opacity-70" : ""
       }`}
     >
       <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-2">
-          {isDaily && (
-            <span className="px-2 py-0.5 text-xs rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-              Daily
-            </span>
-          )}
-          {expiresIn && (
-            <div className="flex items-center gap-1 text-white/40 text-xs">
-              <Clock className="w-3 h-3" />
-              <span>Expires in {expiresIn}</span>
-            </div>
-          )}
-        </div>
         <div className="flex items-center gap-1 text-amber-400 font-medium">
           <Zap className="w-4 h-4" />
-          <span>{xpReward} XP</span>
+          <span>{props.mission.xpReward} XP</span>
         </div>
       </div>
 
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-      <p className="text-white/60 text-sm mb-4">{description}</p>
+      <h3 className="text-lg font-semibold text-white mb-2">
+        {props.mission.name}
+      </h3>
+      <p className="text-white/60 text-sm mb-4">{props.mission.description}</p>
 
-      {progress && !isCompleted && (
+      {!props.completed && (
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between text-xs">
             <span className="text-white/40">Progress</span>
             <span className="text-white/60">
-              {progress.current}/{progress.total}
+              {formatDate2(props.mission.startDate as Date)}/
+              {formatDate2(props.mission.endDate as Date)}
             </span>
-          </div>
-          <div className="w-full h-1.5 bg-white/[0.03] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-rose-500 rounded-full"
-              style={{ width: `${(progress.current / progress.total) * 100}%` }}
-            />
           </div>
         </div>
       )}
 
       <div className="flex justify-between items-center">
-        {isCompleted ? (
+        {props.completed ? (
           <div className="flex items-center gap-2 text-emerald-400 text-sm">
             <CheckCircle className="w-4 h-4" />
             <span>Completed</span>
           </div>
         ) : (
-          <Link href={`/xp/missions/${id}`}>
+          <Link href={`/missions/${props.mission.id}`}>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

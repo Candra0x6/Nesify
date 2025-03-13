@@ -1,33 +1,37 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Users, Copy, Share2, Zap, Award } from "lucide-react"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import { Users, Copy, Share2, Zap, Award } from "lucide-react";
+import { useState } from "react";
 
 interface ReferralSystemProps {
-  referralCode: string
-  referralLink: string
+  referralCode: string;
+  referralLink: string;
   referralStats: {
-    totalReferrals: number
-    pendingReferrals: number
-    xpEarned: number
-  }
+    totalReferrals: number;
+    pendingReferrals: number;
+    xpEarned: number;
+  };
 }
 
-export default function ReferralSystem({ referralCode, referralLink, referralStats }: ReferralSystemProps) {
-  const [linkCopied, setLinkCopied] = useState(false)
-  const [codeCopied, setCodeCopied] = useState(false)
+export default function ReferralSystem({
+  referralCode,
+  referralLink,
+  referralStats,
+}: ReferralSystemProps) {
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   const copyToClipboard = (text: string, type: "link" | "code") => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(text);
     if (type === "link") {
-      setLinkCopied(true)
-      setTimeout(() => setLinkCopied(false), 3000)
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 3000);
     } else {
-      setCodeCopied(true)
-      setTimeout(() => setCodeCopied(false), 3000)
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 3000);
     }
-  }
+  };
 
   const shareReferral = () => {
     if (navigator.share) {
@@ -35,9 +39,9 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
         title: "Join me on NFT Ticketing Platform",
         text: "Use my referral code to get started with NFT tickets!",
         url: referralLink,
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-sm border border-white/[0.08] rounded-xl p-6">
@@ -49,15 +53,19 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
       </div>
 
       <div className="bg-gradient-to-r from-indigo-500/10 to-rose-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-xl p-5 mb-6">
-        <h3 className="text-white font-medium mb-2">Invite Friends & Earn XP</h3>
+        <h3 className="text-white font-medium mb-2">
+          Invite Friends & Earn XP
+        </h3>
         <p className="text-white/60 text-sm mb-4">
-          Share your referral code with friends. When they sign up and make their first purchase, you'll both earn XP
-          rewards!
+          Share your referral code with friends. When they sign up and make
+          their first purchase, you&apos;ll both earn XP rewards!
         </p>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-white/60 text-xs mb-1">Your Referral Code</label>
+            <label className="block text-white/60 text-xs mb-1">
+              Your Referral Code
+            </label>
             <div className="flex items-center">
               <input
                 type="text"
@@ -78,7 +86,9 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
           </div>
 
           <div>
-            <label className="block text-white/60 text-xs mb-1">Your Referral Link</label>
+            <label className="block text-white/60 text-xs mb-1">
+              Your Referral Link
+            </label>
             <div className="flex items-center">
               <input
                 type="text"
@@ -115,8 +125,12 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
             <Users className="w-4 h-4 text-indigo-400" />
             <h3 className="text-white font-medium">Total Referrals</h3>
           </div>
-          <div className="text-2xl font-bold text-white">{referralStats.totalReferrals}</div>
-          <div className="text-white/40 text-xs mt-1">{referralStats.pendingReferrals} pending invites</div>
+          <div className="text-2xl font-bold text-white">
+            {referralStats.totalReferrals}
+          </div>
+          <div className="text-white/40 text-xs mt-1">
+            {referralStats.pendingReferrals} pending invites
+          </div>
         </div>
 
         <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl p-4">
@@ -124,8 +138,12 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
             <Zap className="w-4 h-4 text-amber-400" />
             <h3 className="text-white font-medium">XP Earned</h3>
           </div>
-          <div className="text-2xl font-bold text-white">{referralStats.xpEarned}</div>
-          <div className="text-white/40 text-xs mt-1">From successful referrals</div>
+          <div className="text-2xl font-bold text-white">
+            {referralStats.xpEarned}
+          </div>
+          <div className="text-white/40 text-xs mt-1">
+            From successful referrals
+          </div>
         </div>
 
         <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl p-4">
@@ -133,10 +151,11 @@ export default function ReferralSystem({ referralCode, referralLink, referralSta
             <Award className="w-4 h-4 text-rose-400" />
             <h3 className="text-white font-medium">Rewards</h3>
           </div>
-          <div className="text-white/70 text-sm">Earn 100 XP for each successful referral</div>
+          <div className="text-white/70 text-sm">
+            Earn 100 XP for each successful referral
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

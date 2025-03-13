@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Trophy, Star, Award, Zap } from "lucide-react"
+import { motion } from "framer-motion";
+import { Trophy, Award, Zap } from "lucide-react";
 
 interface XPProgressProps {
-  currentXP: number
-  nextLevelXP: number
-  level: number
-  rank: string
+  currentXP: number;
+  nextLevelXP: number;
+  level: number;
+  rank: string;
 }
 
-export default function XPProgress({ currentXP, nextLevelXP, level, rank }: XPProgressProps) {
-  const progressPercentage = (currentXP / nextLevelXP) * 100
+export default function XPProgress({
+  currentXP,
+  nextLevelXP,
+  level,
+  rank,
+}: XPProgressProps) {
+  const progressPercentage = (currentXP / nextLevelXP) * 100;
 
   return (
     <div className="bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-sm border border-white/[0.08] rounded-xl p-6">
@@ -26,8 +31,7 @@ export default function XPProgress({ currentXP, nextLevelXP, level, rank }: XPPr
         <div className="flex-1 space-y-4 text-center md:text-left">
           <div>
             <h2 className="text-2xl font-bold text-white">Level {level}</h2>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-white/60">
-              <Star className="w-4 h-4 text-indigo-400" />
+            <div className="flex items-center justify-center md:justify-start  text-white/60">
               <span>{rank}</span>
             </div>
           </div>
@@ -46,8 +50,10 @@ export default function XPProgress({ currentXP, nextLevelXP, level, rank }: XPPr
               />
             </div>
             <p className="text-white/40 text-sm">
-              <span className="text-rose-400 font-medium">{nextLevelXP - currentXP} XP</span> needed to reach Level{" "}
-              {level + 1}
+              <span className="text-rose-400 font-medium">
+                {nextLevelXP - currentXP} XP
+              </span>{" "}
+              needed to reach Level {level + 1}
             </p>
           </div>
         </div>
@@ -60,11 +66,10 @@ export default function XPProgress({ currentXP, nextLevelXP, level, rank }: XPPr
           <div className="text-2xl font-bold text-white">{currentXP}</div>
           <div className="flex items-center gap-1 text-white/40 text-xs">
             <Zap className="w-3 h-3 text-amber-400" />
-            <span>+120 XP this week</span>
+            <span></span>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

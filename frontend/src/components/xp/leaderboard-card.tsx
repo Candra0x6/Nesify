@@ -1,31 +1,23 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Trophy, Medal, Award } from "lucide-react"
-import Image from "next/image"
+import { LeaderboardEntry } from "@/utils/type";
+import { motion } from "framer-motion";
+import { Trophy, Medal, Award, Coins } from "lucide-react";
+import Image from "next/image";
+import { Skeleton } from "../ui/skeleton";
 
-interface LeaderboardUser {
-  id: string
-  name: string
-  avatar: string
-  xp: number
-  rank: number
-  level: number
-}
-
-export default function LeaderboardCard({ users }: { users: LeaderboardUser[] }) {
+export default function LeaderboardCard(props: { data: LeaderboardEntry[] }) {
   const getTopRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Trophy className="w-5 h-5 text-amber-400" />
-      case 2:
-        return <Medal className="w-5 h-5 text-gray-300" />
-      case 3:
-        return <Medal className="w-5 h-5 text-amber-700" />
-      default:
-        return <span className="w-5 h-5 flex items-center justify-center text-white/60 font-medium">{rank}</span>
+    if (rank > 5) {
+      return <Trophy className="w-5 h-5 text-amber-400" />;
+    } else if (rank >= 3) {
+      return <Medal className="w-5 h-5 text-amber-700" />;
+    } else if (rank >= 1) {
+      return <Coins className="w-5 h-5 text-amber-800" />;
+    } else {
+      return <Skeleton className="w-5 h-5 text-white/60" />;
     }
-  }
+  };
 
   return (
     <div className="bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-sm border border-white/[0.08] rounded-xl p-6">
@@ -41,29 +33,31 @@ export default function LeaderboardCard({ users }: { users: LeaderboardUser[] })
       </div>
 
       <div className="space-y-4">
-        {users.map((user, index) => (
+        {props.data.map((user, index) => (
           <motion.div
             key={user.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
             className={`flex items-center gap-4 p-3 rounded-lg ${
-              user.rank <= 3 ? "bg-white/[0.03] border border-white/[0.08]" : ""
+              user.level > 1 ? "bg-white/[0.03] border border-white/[0.08]" : ""
             }`}
           >
-            <div className="w-8 h-8 flex items-center justify-center">{getTopRankIcon(user.rank)}</div>
+            <div className="w-8 h-8 flex items-center justify-center">
+              {getTopRankIcon(user.level)}
+            </div>
 
             <div className="flex items-center gap-3 flex-1">
               <Image
-                src={user.avatar || "/placeholder.svg"}
-                alt={user.name}
+                src={"/placeholder.svg"}
+                alt={"placeholder"}
                 width={40}
                 height={40}
                 className="rounded-full border border-white/10"
               />
 
               <div>
-                <h3 className="font-medium text-white">{user.name}</h3>
+                <h3 className="font-medium text-white">{user.username}</h3>
                 <div className="flex items-center gap-1 text-white/40 text-xs">
                   <Award className="w-3 h-3 text-indigo-400" />
                   <span>Level {user.level}</span>
@@ -79,6 +73,5 @@ export default function LeaderboardCard({ users }: { users: LeaderboardUser[] })
         ))}
       </div>
     </div>
-  )
+  );
 }
-
