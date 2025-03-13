@@ -8,7 +8,7 @@ import UseCases from "@/components/sections/use-cases";
 import WhyChooseUs from "@/components/sections/why-choose-us";
 
 export const metadata: Metadata = {
-  title: "NFT Ticketing Platform | The Future of Event Ticketing",
+  title: "Nesify | The Future of Event Ticketing",
   description:
     "Experience the future of event ticketing with our NFT-based platform. Secure, transparent, and seamless ticket management for all your events.",
   keywords:
