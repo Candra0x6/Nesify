@@ -206,7 +206,9 @@ export default function TicketsPage() {
                 <TableCell>
                   <Button
                     onClick={() =>
-                      router.push(`/admin/dashboard/tickets/${ticket.id}/scan`)
+                      router.push(
+                        `/admin/dashboard/tickets/${ticket.eventId}/scan`
+                      )
                     }
                     className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.05] rounded-xl text-white"
                   >

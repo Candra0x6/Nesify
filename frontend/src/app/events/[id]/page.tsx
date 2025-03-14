@@ -133,7 +133,7 @@ export default function EventDetailsPage() {
               </div>
               <div className="">
                 {true && (
-                  <div className="flex flex-col items-center gap-2 text-white">
+                  <div className="flex flex-col gap-2 text-white">
                     <div className="flex items-center gap-2 w-full justify-between  ">
                       <h1 className="text-2xl font-bold">Resale Tickets</h1>
                       <Link

@@ -5,7 +5,9 @@ import NFT from "@/NFTTicket.json";
 import Market from "@/TicketMarket.json";
 import { MarketContract, NFTContract } from "../thirdweb-dev";
 
-const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545"); //used to access contract functions which do not require a signature
+const provider = new ethers.providers.JsonRpcProvider(
+  `${process.env.NEXT_PUBLIC_INFURA_URL}`
+); //used to access contract functions which do not require a signature
 export const tokenContract = new ethers.Contract(
   NFTContract as string,
   NFT.abi,

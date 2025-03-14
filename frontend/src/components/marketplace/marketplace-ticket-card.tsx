@@ -3,7 +3,7 @@
 import { ResaleTicket } from "@/lib/services/contracts/tickets";
 import { client } from "@/lib/thirdweb-dev";
 import { motion } from "framer-motion";
-import { MapPin, User, Calendar, ArrowRight } from "lucide-react";
+import { MapPin, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { MediaRenderer } from "thirdweb/react";
 
@@ -107,20 +107,6 @@ export default function MarketplaceTicketCard({
             </div>
           </div>
 
-          {/* Seller Info */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-indigo-500/20 to-rose-500/20 border border-white/10 flex items-center justify-center">
-                <User className="w-3.5 h-3.5 text-white/70" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <p className="text-xs text-white/70">SUlo</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Benefits */}
           {/* <div className="flex flex-wrap gap-1.5">
             {ticket.benefits.slice(0, 2).map((benefit, index) => (
@@ -141,11 +127,12 @@ export default function MarketplaceTicketCard({
           {/* Action Button */}
           <Link
             href={`/events/${data.ticket.eventId}/tickets/${data.resaleId}`}
+            className=""
           >
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-rose-500 text-white text-sm font-medium flex items-center justify-center gap-2"
+              className="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-rose-500 text-white text-sm font-medium flex items-center justify-center gap-2 mt-5"
             >
               View Ticket
               <ArrowRight className="w-4 h-4" />

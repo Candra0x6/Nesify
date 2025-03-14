@@ -7,10 +7,11 @@ import { signup } from "@/lib/services/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useCompleteMission } from "@/hooks/mission/useMission";
 import { useXPToast } from "@/hooks/useXPToast";
+import { useUser } from "@/hooks/useUser";
 
 function SignButton() {
   const account = useActiveAccount();
-
+  const { login, logout } = useUser();
   const showToast = useXPToast();
   const { mutate: completeMission } = useCompleteMission();
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -34,9 +35,6 @@ function SignButton() {
     },
   });
 
-  const logout = async () => {
-    console.log("logging out!");
-  };
   return (
     <ConnectButton
       client={client}
@@ -58,8 +56,7 @@ function SignButton() {
               xp: 100,
             });
           }
-          localStorage.setItem("user_id", data?.result?.id as string);
-          localStorage.setItem("user_role", data.result?.role as string);
+          login(data?.result?.id as string, data.result?.role as string);
         },
         getLoginPayload: async ({ address }) => {
           return {
@@ -79,8 +76,7 @@ function SignButton() {
           };
         },
         doLogout: async () => {
-          console.log("logging out!");
-          await logout();
+          logout();
         },
       }}
     />

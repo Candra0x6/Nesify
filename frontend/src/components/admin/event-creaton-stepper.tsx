@@ -100,7 +100,7 @@ export default function EventCreationStepper() {
         eventId.toString()
       );
       const ticketPrice = ethers.utils.parseUnits(
-        ticketData?.priceMatic as string,
+        ticketData?.price as string,
         "ether"
       );
       const resalePrice = ethers.utils.parseUnits(
@@ -144,9 +144,7 @@ export default function EventCreationStepper() {
 
     try {
       setIsPublishing(true);
-      console.log("Adding event");
       const eventId = await addEvent();
-      console.log("Adding ticket", eventId);
       await addTicket({ eventId: eventId as number });
       toast.success("Event and Ticket created successfully");
       setIsSuccess(true);

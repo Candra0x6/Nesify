@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
-import axios from "axios";
 import { signers } from "@/lib/contract/cont";
-import { NFTContract } from "@/lib/thirdweb-dev";
+import { client, NFTContract } from "@/lib/thirdweb-dev";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useParams } from "next/navigation";
+import { download } from "thirdweb/storage";
 
 export default function ValidateTicket() {
   const params = useParams();
@@ -86,8 +86,11 @@ export default function ValidateTicket() {
       if (!eventUri) {
         throw new Error("Event data not found");
       }
-      const eventRequest = await axios.get(eventUri);
-      const eventData = eventRequest.data;
+      const response = await download({
+        client: client,
+        uri: eventUri,
+      });
+      const eventData = await response.json();
       setEventName(eventData.name);
       setLoadingState(true);
     } catch (error: unknown) {
