@@ -182,6 +182,16 @@ export async function PUT(
       path: "/",
     });
 
+    response.cookies.set({
+      name: "client_user_role",
+      value: updatedUser.role,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+
     return response;
   } catch (error) {
     console.error("Error updating user:", error);
