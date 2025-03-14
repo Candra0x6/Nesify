@@ -22,8 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
 import { updateUser } from "@/lib/services/api";
-import toast from "react-hot-toast";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface GuideStep {
   id: string;
@@ -36,16 +35,14 @@ interface GuideStep {
 
 export default function NFTCreationGuide() {
   const { user } = useUser();
+  const router = useRouter();
   const { mutate: updateUserRole } = useMutation({
     mutationFn: () =>
       updateUser(user?.id as string, {
         role: "ADMIN",
       }),
     onSuccess: () => {
-      redirect("/admin/dashboard/events/create");
-    },
-    onError: () => {
-      toast.error("Failed to update user role");
+      router.push("/admin/dashboard/events/create");
     },
   });
   const guideSteps: GuideStep[] = [

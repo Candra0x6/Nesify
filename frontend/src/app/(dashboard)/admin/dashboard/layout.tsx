@@ -11,19 +11,12 @@ import {
   CreditCardIcon,
 } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
-import { getUserById } from "@/lib/services/api/user";
 import { redirect } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { useActiveAccount } from "thirdweb/react";
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const account = useActiveAccount();
-
-  const { data: userRole } = useQuery({
-    queryKey: ["userRole"],
-    queryFn: () => getUserById(user?.id || ""),
-  });
 
   if (!account?.address) {
     redirect("/");
@@ -32,7 +25,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     return redirect("/");
   }
 
-  if (userRole?.result?.role !== "ADMIN") {
+  if (user.role !== "ADMIN") {
     return redirect("/user/dashboard");
   }
 
