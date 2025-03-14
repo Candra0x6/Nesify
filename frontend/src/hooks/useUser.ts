@@ -30,8 +30,10 @@ export const useUser = (): UseUserReturn => {
       return { id: null, role: null };
     }
 
-    const id = Cookies.get("user_id") || null;
-    const role = Cookies.get("user_role") || null;
+    // Use client_ prefixed cookies which are not HTTP-only
+    const id = Cookies.get("client_user_id") || null;
+    console.log(id);
+    const role = Cookies.get("client_user_role") || null;
     return { id, role };
   };
 
@@ -41,8 +43,8 @@ export const useUser = (): UseUserReturn => {
 
   // Set user data in cookies
   const login = (id: string, role: string) => {
-    Cookies.set("user_id", id, COOKIE_OPTIONS);
-    Cookies.set("user_role", role, COOKIE_OPTIONS);
+    Cookies.set("client_user_id", id, COOKIE_OPTIONS);
+    Cookies.set("client_user_role", role, COOKIE_OPTIONS);
 
     // If you need to refresh the page or trigger a re-render:
     // window.location.reload();
@@ -50,8 +52,8 @@ export const useUser = (): UseUserReturn => {
 
   // Remove user data from cookies
   const logout = () => {
-    Cookies.remove("user_id", { path: "/" });
-    Cookies.remove("user_role", { path: "/" });
+    Cookies.remove("client_user_id", { path: "/" });
+    Cookies.remove("client_user_role", { path: "/" });
 
     // If you need to refresh the page or trigger a re-render:
     // window.location.reload();

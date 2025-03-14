@@ -36,11 +36,33 @@ export async function POST(
         error: null,
       });
 
-      // Set user cookie for existing user
+      // Set HTTP-only cookie for security
       response.cookies.set({
         name: "user_id",
         value: existingUser.id,
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: "/",
+      });
+
+      // Set client-accessible cookie for useUser hook
+      response.cookies.set({
+        name: "client_user_id",
+        value: existingUser.id,
+        httpOnly: false, // Can be accessed by client-side JavaScript
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: "/",
+      });
+
+      // Set client-accessible role cookie
+      response.cookies.set({
+        name: "client_user_role",
+        value: "user", // Default to "user" for existing users
+        httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -77,11 +99,33 @@ export async function POST(
       error: null,
     });
 
-    // Set user_id cookie
+    // Set user_id cookie (HTTP-only for security)
     response.cookies.set({
       name: "user_id",
       value: user.id,
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+
+    // Set client-accessible cookie for useUser hook
+    response.cookies.set({
+      name: "client_user_id",
+      value: user.id,
+      httpOnly: false, // Can be accessed by client-side JavaScript
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+
+    // Set client-accessible role cookie
+    response.cookies.set({
+      name: "client_user_role",
+      value: "user", // Default to "user" for new users
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7, // 1 week
