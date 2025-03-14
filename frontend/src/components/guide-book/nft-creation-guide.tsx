@@ -21,9 +21,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
-import { useRouter } from "next/navigation";
 import { updateUser } from "@/lib/services/api";
 import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 interface GuideStep {
   id: string;
@@ -36,14 +36,13 @@ interface GuideStep {
 
 export default function NFTCreationGuide() {
   const { user } = useUser();
-  const router = useRouter();
   const { mutate: updateUserRole } = useMutation({
     mutationFn: () =>
       updateUser(user?.id as string, {
         role: "ADMIN",
       }),
     onSuccess: () => {
-      router.push("/admin/dashboard/events/create");
+      redirect("/admin/dashboard/events/create");
     },
     onError: () => {
       toast.error("Failed to update user role");
