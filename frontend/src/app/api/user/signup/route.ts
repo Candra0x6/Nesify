@@ -38,6 +38,17 @@ export async function POST(
 
       // Set user cookie for existing user
       response.cookies.set({
+        name: "user_id",
+        value: existingUser.id,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: "/",
+      });
+
+      // Set user session cookie
+      response.cookies.set({
         name: "user_session",
         value: JSON.stringify({
           id: existingUser.id,
@@ -66,7 +77,18 @@ export async function POST(
       error: null,
     });
 
-    // Set user cookie for new user
+    // Set user_id cookie
+    response.cookies.set({
+      name: "user_id",
+      value: user.id,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+
+    // Set user session cookie
     response.cookies.set({
       name: "user_session",
       value: JSON.stringify({
