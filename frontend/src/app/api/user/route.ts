@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { ApiResponse } from "@/utils/type";
 import { NextResponse, NextRequest } from "next/server";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 
 // GET route to fetch user data by ID
 export async function GET(
@@ -85,7 +85,7 @@ export async function PUT(
   req: NextRequest
 ): Promise<NextResponse<ApiResponse<User>>> {
   try {
-    const { id, username, profileImageUrl } = await req.json();
+    const { id, username, profileImageUrl, role } = await req.json();
 
     // Validation
     if (!id) {
@@ -123,9 +123,10 @@ export async function PUT(
     const updateData: {
       username?: string;
       profileImageId?: string;
+      role?: Role;
     } = {};
     if (username !== undefined) updateData.username = username;
-
+    if (role !== undefined) updateData.role = role;
     // Handle profile image if provided
     if (profileImageUrl) {
       // Check if the user already has a profile image
@@ -164,12 +165,24 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json<ApiResponse<User>>({
+    const response = NextResponse.json<ApiResponse<User>>({
       message: "User updated successfully",
       status: 200,
       result: updatedUser,
       error: null,
     });
+
+    response.cookies.set({
+      name: "user_role",
+      value: updatedUser.role,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
     console.error("Error updating user:", error);
     return NextResponse.json<ApiResponse<User>>(
