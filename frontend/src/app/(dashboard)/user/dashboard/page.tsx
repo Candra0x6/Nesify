@@ -13,6 +13,7 @@ export default function XPDashboard() {
   const { user } = useUser();
   console.log(user);
   const userId = user?.id;
+
   const { data: level, isLoading: levelLoading } = useQuery({
     queryKey: ["UserLevels"],
     queryFn: () => getUserLevel(userId as string),
