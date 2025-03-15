@@ -3,10 +3,10 @@ import { ethers } from "ethers";
 
 import NFT from "@/NFTTicket.json";
 import Market from "@/TicketMarket.json";
-import { MarketContract, NFTContract } from "../thirdweb-dev";
+import { ClientId, MarketContract, NFTContract } from "../thirdweb-dev";
 
 const provider = new ethers.providers.JsonRpcProvider(
-  `https://api.zan.top/polygon-amoy`
+  `https://80002.rpc.thirdweb.com/${ClientId}`
 ); //used to access contract functions which do not require a signature
 export const tokenContract = new ethers.Contract(
   NFTContract as string,
