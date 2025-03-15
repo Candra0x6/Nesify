@@ -6,7 +6,7 @@ import Market from "@/TicketMarket.json";
 import { MarketContract, NFTContract } from "../thirdweb-dev";
 
 const provider = new ethers.providers.JsonRpcProvider(
-  `${process.env.NEXT_PUBLIC_INFURA_URL}`
+  `https://api.zan.top/polygon-amoy`
 ); //used to access contract functions which do not require a signature
 export const tokenContract = new ethers.Contract(
   NFTContract as string,
